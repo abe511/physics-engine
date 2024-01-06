@@ -30,6 +30,21 @@ export default class Ball {
     this.guides = guides;
   }
 
+  displace() {
+
+    // this.acc = this.acc.unit();
+
+    // add acceleration to velocity 
+    // this.vel = this.vel.add(this.acc.unit());
+    this.vel = this.vel.add(this.acc);
+
+    // decrease velocity due to friction
+    this.vel = this.vel.mult(1 - this.friction);
+
+    // change position due to velocity
+		this.pos = this.pos.add(this.vel);
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.fillStyle = this.fill;

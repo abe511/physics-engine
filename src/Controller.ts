@@ -106,15 +106,6 @@ export class Controller {
     if(!this.left && !this.right) {
       this.obj.acc.x = 0;
     }
-    // console.log(this.obj.vel);
-    // this.obj.acc = this.obj.acc.unit();
-    // add acceleration to velocity 
-    // this.obj.vel = this.obj.vel.add(this.obj.acc.unit());
-    this.obj.vel = this.obj.vel.add(this.obj.acc);
-    // decrease velocity due to friction
-    this.obj.vel = this.obj.vel.mult(1 - this.obj.friction);
-    // change position due to velocity
-		this.obj.pos = this.obj.pos.add(this.obj.vel);
 
   }
 

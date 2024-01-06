@@ -84,21 +84,34 @@ class Scene {
   // detect and resolve collision if the distance between objects is <= the sum of their radii
   collisionDetection(obj1: Ball, obj2: Ball) {
     this.distance = obj1.pos.subtract(obj2.pos);
-    let distance: number = this.distance.mag();
-    let collStatus: boolean = distance <= obj1.r + obj2.r;
+    const distance: number = this.distance.mag();
+    const collStatus: boolean = distance <= obj1.r + obj2.r;
     if(collStatus) {
-      this.collisionResolution(obj1, obj2);
+      this.penetrationResolution(obj1, obj2);
+      this.collisionResponse(obj1, obj2);
     }
     return collStatus;
   }
 
-  // move objects in opposing directions to half of their collision depth
-  collisionResolution(obj1: Ball, obj2: Ball) {
-    let collDepth: number = obj1.r + obj2.r - this.distance.mag();
-    let resolutionDist: Vector = this.distance.unit().mult(collDepth * 0.5);
+  // move objects in opposing directions to half of their penetration depth
+  penetrationResolution(obj1: Ball, obj2: Ball) {
+    const penDepth: number = obj1.r + obj2.r - this.distance.mag();
+    const resolutionDist: Vector = this.distance.unit().mult(penDepth * 0.5);
     obj1.pos = obj1.pos.add(resolutionDist);
     obj2.pos = obj2.pos.add(resolutionDist.mult(-1));
   }
+
+  // resolve collision
+  collisionResponse(obj1: Ball, obj2: Ball) {
+    const normal = obj1.pos.subtract(obj2.pos).unit(); // unit vector from center1 to center2
+    const relativeVel = obj1.vel.subtract(obj2.vel); // difference between velocity vectors of objects
+    const separatingVel = Vector.dot(relativeVel, normal); // dot product of relative velocity and collision normal
+    const separatingVelVector = normal.mult(-separatingVel); // with direction of collision normal and reversed magnitude
+
+    obj1.vel = obj1.vel.add(separatingVelVector);
+    obj2.vel = obj2.vel.add(separatingVelVector.mult(-1));
+  }
+
 
   // loop
   animate() {
@@ -107,6 +120,7 @@ class Scene {
 
     this.sceneObjects.forEach((obj, idx) => {
       obj.draw(this.ctx!);
+      obj.displace();
       for(let i = idx + 1; i < this.sceneObjects.length; ++i) {
         this.collisionDetection(obj, this.sceneObjects[i]);
       }
