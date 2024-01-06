@@ -2,28 +2,30 @@ import Vector from "./Vector.js";
 
 export default class Ball {
 
-  // x: number;
-  // y: number;
   pos: Vector;
   r: number;
+  m: number;
+  mInv: number;
   vel: Vector;
   acc: Vector;
   acceleration: number;
   friction: number;
+  elasticity: number;
   maxSpeed: number;
   fill: CanvasFillStrokeStyles["fillStyle"];
   stroke: CanvasFillStrokeStyles["strokeStyle"];
   guides: boolean;
 
-  constructor(x: number, y: number, r: number, fill: CanvasFillStrokeStyles["fillStyle"]="#aabbcc", stroke: CanvasFillStrokeStyles["strokeStyle"]="112233", guides: boolean) {
-    // this.x = x;
-    // this.y = y;
+  constructor(x: number, y: number, r: number, m: number, e: number, fill: CanvasFillStrokeStyles["fillStyle"]="#aabbcc", stroke: CanvasFillStrokeStyles["strokeStyle"]="112233", guides: boolean) {
     this.pos = new Vector(x, y);
     this.r = r;
+    this.m = m;
+    this.mInv = this.m != 0 ? 1 / this.m : 0;
     this.vel = new Vector(0, 0);
     this.acc = new Vector(0, 0);
     this.acceleration = 0.1;
     this.friction = 0.1;
+    this.elasticity = e;
     this.maxSpeed = 2;
     this.fill = fill;
     this.stroke = stroke;
@@ -32,10 +34,7 @@ export default class Ball {
 
   displace() {
 
-    // this.acc = this.acc.unit();
-
     // add acceleration to velocity 
-    // this.vel = this.vel.add(this.acc.unit());
     this.vel = this.vel.add(this.acc);
 
     // decrease velocity due to friction

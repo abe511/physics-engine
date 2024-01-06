@@ -48,16 +48,16 @@ class Scene {
   populate() {
 
     const objects = [
-      {x: 100, y: 200, r: 30, fill: "gray", stroke: "navy", guides: true},
-      {x: 300, y: 300, r: 30, fill: "darkblue", stroke: "red", guides: true},
-      {x: 500, y: 400, r: 20, fill: "hotpink", stroke: "crimson", guides: true},
-      {x: 550, y: 400, r: 20, fill: "orchid", stroke: "deeppink", guides: true},
-      {x: 500, y: 450, r: 20, fill: "lightcoral", stroke: "maroon", guides: true},
-      {x: 550, y: 450, r: 20, fill: "pink", stroke: "salmon", guides: true},
+      {x: 100, y: 200, r: 30, m: 1, e: 1, fill: "gray", stroke: "navy", guides: true},
+      {x: 300, y: 300, r: 30, m: 1, e: 1, fill: "darkblue", stroke: "red", guides: true},
+      {x: 500, y: 400, r: 20, m: 0.5, e: 1,  fill: "hotpink", stroke: "crimson", guides: true},
+      {x: 550, y: 400, r: 20, m: 0.5, e: 0.5,  fill: "orchid", stroke: "deeppink", guides: true},
+      {x: 500, y: 450, r: 20, m: 0.5, e: 0,  fill: "lightcoral", stroke: "maroon", guides: true},
+      {x: 550, y: 450, r: 20, m: 0.5, e: 1,  fill: "pink", stroke: "salmon", guides: true},
     ];
 
     for(let obj of objects) {
-      this.sceneObjects.push(new Ball(obj.x, obj.y, obj.r, obj.fill, obj.stroke, obj.guides));
+      this.sceneObjects.push(new Ball(obj.x, obj.y, obj.r, obj.m, obj.e, obj.fill, obj.stroke, obj.guides));
     }
   }
 
@@ -86,6 +86,7 @@ class Scene {
     this.distance = obj1.pos.subtract(obj2.pos);
     const distance: number = this.distance.mag();
     const collStatus: boolean = distance <= obj1.r + obj2.r;
+
     if(collStatus) {
       this.penetrationResolution(obj1, obj2);
       this.collisionResponse(obj1, obj2);
@@ -97,19 +98,21 @@ class Scene {
   penetrationResolution(obj1: Ball, obj2: Ball) {
     const penDepth: number = obj1.r + obj2.r - this.distance.mag();
     const resolutionDist: Vector = this.distance.unit().mult(penDepth * 0.5);
+
     obj1.pos = obj1.pos.add(resolutionDist);
     obj2.pos = obj2.pos.add(resolutionDist.mult(-1));
   }
 
   // resolve collision
   collisionResponse(obj1: Ball, obj2: Ball) {
-    const normal = obj1.pos.subtract(obj2.pos).unit(); // unit vector from center1 to center2
-    const relativeVel = obj1.vel.subtract(obj2.vel); // difference between velocity vectors of objects
-    const separatingVel = Vector.dot(relativeVel, normal); // dot product of relative velocity and collision normal
-    const separatingVelVector = normal.mult(-separatingVel); // with direction of collision normal and reversed magnitude
+    const normal: Vector = obj1.pos.subtract(obj2.pos).unit(); // unit vector from center1 to center2
+    const relativeVelocity: Vector = obj1.vel.subtract(obj2.vel); // difference between velocity vectors of objects
+    const separatingVelocityBefore: number = Vector.dot(relativeVelocity, normal); // dot product of relative velocity and collision normal
+    const separatingVelocityAfter: number = -separatingVelocityBefore; // direct opposite of velocity before the collision for elastic collisions (e=1) 
+    const separatingVelocityVector: Vector = normal.mult(separatingVelocityAfter); // with direction of collision normal and magnitude of separating velocity after the collision
 
-    obj1.vel = obj1.vel.add(separatingVelVector);
-    obj2.vel = obj2.vel.add(separatingVelVector.mult(-1));
+    obj1.vel = obj1.vel.add(separatingVelocityVector);
+    obj2.vel = obj2.vel.add(separatingVelocityVector.mult(-1));
   }
 
 
