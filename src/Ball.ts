@@ -4,19 +4,19 @@ export default class Ball {
 
   pos: Vector;
   r: number;
+  elasticity: number;
   m: number;
   mInv: number;
   vel: Vector;
   acc: Vector;
   acceleration: number;
   friction: number;
-  elasticity: number;
   maxSpeed: number;
   fill: CanvasFillStrokeStyles["fillStyle"];
   stroke: CanvasFillStrokeStyles["strokeStyle"];
   guides: boolean;
 
-  constructor(x: number, y: number, r: number, m: number, e: number, fill: CanvasFillStrokeStyles["fillStyle"]="#aabbcc", stroke: CanvasFillStrokeStyles["strokeStyle"]="112233", guides: boolean) {
+  constructor(x: number, y: number, r: number, e: number, m: number, fill: CanvasFillStrokeStyles["fillStyle"]="#aabbcc", stroke: CanvasFillStrokeStyles["strokeStyle"]="112233", guides: boolean) {
     this.pos = new Vector(x, y);
     this.r = r;
     this.m = m;
@@ -32,7 +32,7 @@ export default class Ball {
     this.guides = guides;
   }
 
-  displace() {
+  displace(): void {
 
     // add acceleration to velocity 
     this.vel = this.vel.add(this.acc);
@@ -44,7 +44,7 @@ export default class Ball {
 		this.pos = this.pos.add(this.vel);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.fillStyle = this.fill;
     ctx.strokeStyle = this.stroke;

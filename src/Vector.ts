@@ -9,28 +9,27 @@ export default class Vector {
     this.y = y;
   }
 
-  static dot(v1: Vector, v2: Vector) {
+  static dot(v1: Vector, v2: Vector): number {
     return (v1.x * v2.x + v1.y * v2.y);
   }
 
-  add(v: Vector) {
-    // console.log(this.x, this.y);
+  add(v: Vector): Vector {
     return new Vector(this.x + v.x, this.y + v.y);
   }
 
-  subtract(v: Vector) {
+  subtract(v: Vector): Vector {
     return new Vector(this.x - v.x, this.y - v.y);
   }
 
-  mult(n: number) {
+  mult(n: number): Vector {
     return new Vector(this.x * n, this.y * n);
   }
   
-  mag() {
+  mag(): number {
     return Math.sqrt(this.x ** 2 + this.y ** 2);
   }
 
-  unit() {
+  unit(): Vector {
     const magnitude = this.mag();
     if(magnitude) {
       return new Vector(this.x / magnitude, this.y / magnitude);
@@ -39,11 +38,11 @@ export default class Vector {
     return new Vector(0, 0);
   }
 
-  normal() {
+  normal(): Vector {
     return new Vector(-this.y, this.x);
   }
 
-  drawVec(ctx: CanvasRenderingContext2D, startX: number, startY: number, n: number, color: CanvasFillStrokeStyles["strokeStyle"]) {
+  drawVec(ctx: CanvasRenderingContext2D, startX: number, startY: number, n: number, color: CanvasFillStrokeStyles["strokeStyle"]): void {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.moveTo(startX, startY);

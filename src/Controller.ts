@@ -80,7 +80,7 @@ export class Controller {
 
   }
 
-  move() {
+  move(): void {
     // accelerate on key press
     if(this.left && this.obj.vel.x >= -this.obj.maxSpeed) {
       this.obj.acc.x -= this.obj.acceleration;
@@ -109,7 +109,7 @@ export class Controller {
 
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D): void {
     ctx.save();
     ctx.fillStyle = "rgba(100, 100, 100, 0.2)";
     ctx.strokeStyle = "#aaa";

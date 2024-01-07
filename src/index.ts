@@ -28,7 +28,7 @@ class Scene {
   }
 
   // context
-  create() {
+  create(): CanvasRenderingContext2D | null {
     const container = document.querySelector("#container");
     const cnv = document.createElement("canvas");
     cnv.setAttribute("width", "800");
@@ -45,15 +45,15 @@ class Scene {
   
 
   // objects
-  populate() {
+  populate(): void {
 
     const objects = [
-      {x: 100, y: 200, r: 30, m: 100, e: 1, fill: "gray", stroke: "navy", guides: true},
-      {x: 300, y: 300, r: 30, m: 10, e: 1, fill: "lightgray", stroke: "red", guides: true},
-      {x: 500, y: 400, r: 20, m: 0.5, e: 1,  fill: "hotpink", stroke: "crimson", guides: true},
-      {x: 550, y: 400, r: 20, m: 0.5, e: 0.5,  fill: "orchid", stroke: "deeppink", guides: true},
-      {x: 500, y: 450, r: 20, m: 1.0, e: 0.5,  fill: "lightcoral", stroke: "maroon", guides: true},
-      {x: 550, y: 450, r: 20, m: 0.5, e: 0,  fill: "pink", stroke: "salmon", guides: true},
+      {x: 100, y: 200, r: 30, e: 1, m: 100, fill: "gray", stroke: "navy", guides: true},
+      {x: 300, y: 300, r: 30, e: 1, m: 10, fill: "lightgray", stroke: "red", guides: true},
+      {x: 500, y: 400, r: 20, e: 1, m: 0.5, fill: "hotpink", stroke: "crimson", guides: true},
+      {x: 550, y: 400, r: 20, e: 0.5, m: 0.5, fill: "orchid", stroke: "deeppink", guides: true},
+      {x: 500, y: 450, r: 20, e: 0.5, m: 1.0, fill: "lightcoral", stroke: "maroon", guides: true},
+      {x: 550, y: 450, r: 20, e: 0, m: 0.5, fill: "pink", stroke: "salmon", guides: true},
     ];
 
     for(let obj of objects) {
@@ -62,7 +62,7 @@ class Scene {
   }
 
   // controls
-  setupController(player: number) {
+  setupController(player: number): Controller {
 
     const keys: KeyMapping[] = [
       {
@@ -82,7 +82,7 @@ class Scene {
   }
 
   // detect and resolve collision if the distance between objects is <= the sum of their radii
-  collisionDetection(obj1: Ball, obj2: Ball) {
+  collisionDetection(obj1: Ball, obj2: Ball): boolean {
     this.distance = obj1.pos.subtract(obj2.pos);
     const distance: number = this.distance.mag();
     const collStatus: boolean = distance <= obj1.r + obj2.r;
@@ -95,7 +95,7 @@ class Scene {
   }
 
   // move objects in opposing directions to half of their penetration depth
-  penetrationResolution(obj1: Ball, obj2: Ball) {
+  penetrationResolution(obj1: Ball, obj2: Ball): void {
     const penDepth: number = obj1.r + obj2.r - this.distance.mag();
     const resolutionDist: Vector = this.distance.unit().mult(penDepth / (obj1.mInv + obj2.mInv));
 
@@ -104,13 +104,13 @@ class Scene {
   }
 
   // resolve collision
-  collisionResponse(obj1: Ball, obj2: Ball) {
+  collisionResponse(obj1: Ball, obj2: Ball): void {
     const normal: Vector = obj1.pos.subtract(obj2.pos).unit(); // unit vector from center1 to center2
     const relativeVelocity: Vector = obj1.vel.subtract(obj2.vel); // difference between velocity vectors of objects
     const separatingVelocityBefore: number = Vector.dot(relativeVelocity, normal); // dot product of relative velocity and collision normal
     const separatingVelocityAfter: number = -separatingVelocityBefore * obj1.elasticity * obj2.elasticity; // direct opposite of velocity before the collision for elastic collisions (e=1) 
     // const separatingVelocityAfter: number = -separatingVelocityBefore * Math.min(obj1.elasticity, obj2.elasticity); 
-    const separatingVelocityVector: Vector = normal.mult(separatingVelocityAfter); // with direction of collision normal and magnitude of separating velocity after the collision
+    // const separatingVelocityVector: Vector = normal.mult(separatingVelocityAfter); // with direction of collision normal and magnitude of separating velocity after the collision
 
     const separatingVelocityDiff: number = separatingVelocityAfter -separatingVelocityBefore;
     const impulse: number = separatingVelocityDiff / (obj1.mInv + obj2.mInv); // separating velocity diff divided by sum of inverse masses
@@ -122,7 +122,7 @@ class Scene {
 
 
   // loop
-  animate() {
+  animate(): void {
 
     this.ctx!.clearRect(0, 0, this.ctx!.canvas.width, this.ctx!.canvas.height);
 
@@ -143,6 +143,6 @@ class Scene {
 
 }
 
-const scene = new Scene();
+const scene: Scene = new Scene();
 requestAnimationFrame(scene.animate.bind(scene));
 // scene.animate();
