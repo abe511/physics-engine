@@ -24,9 +24,9 @@ export default class Ball {
     this.vel = new Vector(0, 0);
     this.acc = new Vector(0, 0);
     this.acceleration = 0.1;
-    this.friction = 0.1;
+    this.friction = 0.05;
     this.elasticity = e;
-    this.maxSpeed = 2;
+    this.maxSpeed = 3;
     this.fill = fill;
     this.stroke = stroke;
     this.guides = guides;
@@ -64,6 +64,14 @@ export default class Ball {
       // this.vel.drawVec(ctx, ctx.canvas.width - 50, ctx.canvas.height - 50, 10, "#444");
       // this.acc.drawVec(ctx, ctx.canvas.width - 50, ctx.canvas.height - 50, 100, "#aaa");
     }
+
+    this.vel.drawVec(ctx, this.pos.x, this.pos.y, this.r, "black");
+    ctx.fillStyle = "black";
+    ctx.fillText(`e = ${this.elasticity}`, this.pos.x - 20, this.pos.y - 15);
+    ctx.fillText(`m = ${this.m}`, this.pos.x - 20, this.pos.y - 5);
+    ctx.fillText(`a = ${this.acc.mag().toFixed(3)}`, this.pos.x - 20, this.pos.y + 5);
+    ctx.fillText(`v = ${this.vel.mag().toFixed(3)}`, this.pos.x - 20, this.pos.y + 15);
+
     ctx.restore();
   }
 

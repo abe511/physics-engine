@@ -48,12 +48,12 @@ class Scene {
   populate() {
 
     const objects = [
-      {x: 100, y: 200, r: 30, m: 1, e: 1, fill: "gray", stroke: "navy", guides: true},
-      {x: 300, y: 300, r: 30, m: 1, e: 1, fill: "darkblue", stroke: "red", guides: true},
+      {x: 100, y: 200, r: 30, m: 100, e: 1, fill: "gray", stroke: "navy", guides: true},
+      {x: 300, y: 300, r: 30, m: 10, e: 1, fill: "lightgray", stroke: "red", guides: true},
       {x: 500, y: 400, r: 20, m: 0.5, e: 1,  fill: "hotpink", stroke: "crimson", guides: true},
       {x: 550, y: 400, r: 20, m: 0.5, e: 0.5,  fill: "orchid", stroke: "deeppink", guides: true},
-      {x: 500, y: 450, r: 20, m: 0.5, e: 0,  fill: "lightcoral", stroke: "maroon", guides: true},
-      {x: 550, y: 450, r: 20, m: 0.5, e: 1,  fill: "pink", stroke: "salmon", guides: true},
+      {x: 500, y: 450, r: 20, m: 1.0, e: 0.5,  fill: "lightcoral", stroke: "maroon", guides: true},
+      {x: 550, y: 450, r: 20, m: 0.5, e: 0,  fill: "pink", stroke: "salmon", guides: true},
     ];
 
     for(let obj of objects) {
@@ -97,10 +97,10 @@ class Scene {
   // move objects in opposing directions to half of their penetration depth
   penetrationResolution(obj1: Ball, obj2: Ball) {
     const penDepth: number = obj1.r + obj2.r - this.distance.mag();
-    const resolutionDist: Vector = this.distance.unit().mult(penDepth * 0.5);
+    const resolutionDist: Vector = this.distance.unit().mult(penDepth / (obj1.mInv + obj2.mInv));
 
-    obj1.pos = obj1.pos.add(resolutionDist);
-    obj2.pos = obj2.pos.add(resolutionDist.mult(-1));
+    obj1.pos = obj1.pos.add(resolutionDist.mult(obj1.mInv));
+    obj2.pos = obj2.pos.add(resolutionDist.mult(-obj2.mInv));
   }
 
   // resolve collision
@@ -108,11 +108,16 @@ class Scene {
     const normal: Vector = obj1.pos.subtract(obj2.pos).unit(); // unit vector from center1 to center2
     const relativeVelocity: Vector = obj1.vel.subtract(obj2.vel); // difference between velocity vectors of objects
     const separatingVelocityBefore: number = Vector.dot(relativeVelocity, normal); // dot product of relative velocity and collision normal
-    const separatingVelocityAfter: number = -separatingVelocityBefore; // direct opposite of velocity before the collision for elastic collisions (e=1) 
+    const separatingVelocityAfter: number = -separatingVelocityBefore * obj1.elasticity * obj2.elasticity; // direct opposite of velocity before the collision for elastic collisions (e=1) 
+    // const separatingVelocityAfter: number = -separatingVelocityBefore * Math.min(obj1.elasticity, obj2.elasticity); 
     const separatingVelocityVector: Vector = normal.mult(separatingVelocityAfter); // with direction of collision normal and magnitude of separating velocity after the collision
 
-    obj1.vel = obj1.vel.add(separatingVelocityVector);
-    obj2.vel = obj2.vel.add(separatingVelocityVector.mult(-1));
+    const separatingVelocityDiff: number = separatingVelocityAfter -separatingVelocityBefore;
+    const impulse: number = separatingVelocityDiff / (obj1.mInv + obj2.mInv); // separating velocity diff divided by sum of inverse masses
+    const impulseVector: Vector = normal.mult(impulse);
+
+    obj1.vel = obj1.vel.add(impulseVector.mult(obj1.mInv));
+    obj2.vel = obj2.vel.add(impulseVector.mult(-obj2.mInv));
   }
 
 
