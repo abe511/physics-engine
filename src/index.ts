@@ -57,7 +57,7 @@ class Scene {
     ];
 
     for(let obj of objects) {
-      this.sceneObjects.push(new Ball(obj.x, obj.y, obj.r, obj.m, obj.e, obj.fill, obj.stroke, obj.guides));
+      this.sceneObjects.push(new Ball(obj.x, obj.y, obj.r, obj.e, obj.m, obj.fill, obj.stroke, obj.guides));
     }
   }
 
